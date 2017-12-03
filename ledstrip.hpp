@@ -29,6 +29,9 @@ public:
     void setColor(const Color &color);
 
     inline void turnOff() { this->setColor(Color::black()); }
+
+    void fadeIn();
+    void fadeOut();
 };
 
 

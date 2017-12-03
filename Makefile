@@ -1,8 +1,8 @@
 CC=g++
 CFLAGS=-I.
 LFLAGS=-lrt -lpthread -lpigpiod_if2
-DEPS = pir.hpp ledstrip.hpp
-OBJ = pir.o ledstrip.o main.o
+DEPS = pir.hpp ledstrip.hpp ledstrip_controller.hpp
+OBJ = pir.o ledstrip.o ledstrip_controller.o main.o
 
 %.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

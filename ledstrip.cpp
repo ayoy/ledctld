@@ -27,3 +27,13 @@ void LedStrip::setColor(const Color &color)
     set_PWM_dutycycle(this->pigpio, this->gpioG, this->_color.green);
     set_PWM_dutycycle(this->pigpio, this->gpioB, this->_color.blue);
 }
+
+void LedStrip::fadeIn()
+{
+
+}
+
+void LedStrip::fadeOut()
+{
+
+}

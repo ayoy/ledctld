@@ -3,7 +3,16 @@
 
 #include <thread>
 
-class PIR {
+class PIR;
+
+class PIRDelegate 
+{
+public:
+    virtual void pirDidRecognizeMotion(const PIR &pir) = 0;
+};
+
+class PIR 
+{
 
     int pigpio;
     unsigned gpio;
@@ -24,7 +33,7 @@ public:
     bool isEnabled() const;
     void setEnabled(bool enabled);
 
-    void(*didRecognizeMotion)(const PIR &) = nullptr;
+    PIRDelegate *delegate {nullptr};
 };
 
 #endif

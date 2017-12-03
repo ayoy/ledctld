@@ -62,11 +62,11 @@ void PIR::updateState()
         if (gpioState != this->state) {
             this->state = gpioState;
 
-            if (this->state && this->didRecognizeMotion) {
-                didRecognizeMotion(*this);
+            if (this->state && this->delegate) {
+                this->delegate->pirDidRecognizeMotion(*this);
             }
         }
 
-        this_thread::sleep_for(1s);
+        this_thread::sleep_for(500ms);
     }
 }
