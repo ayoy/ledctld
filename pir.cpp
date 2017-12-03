@@ -65,8 +65,9 @@ void PIR::updateState()
             if (this->state && this->delegate) {
                 this->delegate->pirDidRecognizeMotion(*this);
             }
+            this_thread::sleep_for(5s);
+        } else {
+            this_thread::sleep_for(500ms);
         }
-
-        this_thread::sleep_for(500ms);
     }
 }
