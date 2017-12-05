@@ -8,7 +8,7 @@
 
 using namespace std;
 
-static const Color & gBlack = {0,0,0};
+static const Color gBlack = {0,0,0};
 
 Color::Color(unsigned red, unsigned green, unsigned blue):
     red(max(min(red, 255u), 0u)),
@@ -30,6 +30,8 @@ const Color & Color::black()
 //
 
 // values as per https://stackoverflow.com/a/596243/969818
+
+static const GPIOColor gGPIOBlack = GPIOColor(Color::black(), 0);
 
 static const double Y_RED = 0.299;
 static const double Y_GREEN = 0.587;
@@ -63,13 +65,30 @@ void GPIOColor::applyBrightness()
     // printf("GPIOColor r: %d g: %d b: %d, br: %.2f\n", this->_red, this->_green, this->_blue, this->_brightness);
 }
 
+const GPIOColor & GPIOColor::black()
+{
+    return gGPIOBlack;
+}
+
 //
+
+void LedStrip::setEnabled(bool enabled)
+{
+    if (this->enabled != enabled) {
+        this->enabled = enabled;
+        if (this->enabled) {
+            this->updatePins(this->gpioColor);
+        } else {
+            this->updatePins(GPIOColor::black());
+        }
+    }
+}
 
 void LedStrip::setColor(const Color &color, double brightness)
 {
     this->_color = color;
     this->gpioColor = GPIOColor(color, brightness);
-    this->updatePins();
+    this->applyCurrentColor();
     cout << "color: " << this->_color.red << " " << this->_color.green << " " << this->_color.blue << endl;
 }
 
@@ -79,14 +98,14 @@ void LedStrip::fadeIn()
     auto step = 0.05;
     while (brightness <= 1.0) {
         this->gpioColor.setBrightness(brightness);
-        this->updatePins();
+        this->applyCurrentColor();
 
         brightness += step;
         printf("fadeIn r: %d g: %d b: %d, br: %.2f\n", this->gpioColor.red(), this->gpioColor.green(), this->gpioColor.blue(), brightness);
         this_thread::sleep_for(25ms);
     }
     this->gpioColor.setBrightness(1.0);
-    this->updatePins();
+    this->applyCurrentColor();
     printf("fadeIn r: %d g: %d b: %d, br: %.2f\n", this->gpioColor.red(), this->gpioColor.green(), this->gpioColor.blue(), brightness);
 }
 
@@ -96,20 +115,29 @@ void LedStrip::fadeOut()
     auto step = 0.05;
     while (brightness >= 0.0) {
         this->gpioColor.setBrightness(brightness);
-        this->updatePins();
+        this->applyCurrentColor();
 
         brightness -= step;
         printf("fadeOut r: %d g: %d b: %d, br: %.2f\n", this->gpioColor.red(), this->gpioColor.green(), this->gpioColor.blue(), brightness);
         this_thread::sleep_for(25ms);
     }
     this->gpioColor.setBrightness(0.0);
-    this->updatePins();
+    this->applyCurrentColor();
     printf("fadeOut r: %d g: %d b: %d, br: %.2f\n", this->gpioColor.red(), this->gpioColor.green(), this->gpioColor.blue(), brightness);
 }
 
-void LedStrip::updatePins() const
+void LedStrip::applyCurrentColor() const
 {
-    set_PWM_dutycycle(this->pigpio, this->gpioR, this->gpioColor.red());
-    set_PWM_dutycycle(this->pigpio, this->gpioG, this->gpioColor.green());
-    set_PWM_dutycycle(this->pigpio, this->gpioB, this->gpioColor.blue());    
+    if (this->isEnabled()) {
+        this->updatePins(this->gpioColor);
+    } else {
+        this->updatePins(GPIOColor::black());
+    }
+}
+
+void LedStrip::updatePins(const GPIOColor &color) const
+{
+    set_PWM_dutycycle(this->pigpio, this->gpioR, color.red());
+    set_PWM_dutycycle(this->pigpio, this->gpioG, color.green());
+    set_PWM_dutycycle(this->pigpio, this->gpioB, color.blue());    
 }

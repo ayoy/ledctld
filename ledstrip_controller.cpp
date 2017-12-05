@@ -27,6 +27,7 @@ void LedStripController::run()
     std::cout << "Thread " << std::this_thread::get_id() << std::endl;
 
     this->pir->setEnabled(true);
+    this->ledStrip->setEnabled(true);
 
     while (true) {
         {

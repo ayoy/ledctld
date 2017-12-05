@@ -35,6 +35,8 @@ public:
     inline unsigned brightness() const { return this->_brightness; };
 
     void setBrightness(double brightness);
+
+    static const GPIOColor & black();
 };
 
 class LedStrip
@@ -46,9 +48,12 @@ class LedStrip
     Color _color {Color::black()};
     GPIOColor gpioColor {GPIOColor(Color::black())};
 
+    bool enabled {false};
+
     double brightness {0};
 
-    void updatePins() const;
+    void applyCurrentColor() const;
+    void updatePins(const GPIOColor &color) const;
 
 public:
     LedStrip(int pigpio, unsigned gpioR, unsigned gpioG, unsigned gpioB): 
@@ -61,6 +66,9 @@ public:
     inline Color currentColor() const { return this->gpioColor.color(); }
 
     inline void turnOff() { this->setColor(Color::black()); }
+
+    void setEnabled(bool enabled);
+    inline bool isEnabled() const { return this->enabled; }
 
     void fadeIn();
     void fadeOut();
