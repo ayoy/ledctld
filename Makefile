@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-I.
+CFLAGS=-g -I.
 LFLAGS=-lrt -lpthread -lpigpiod_if2
 DEPS = pir.hpp ledstrip.hpp ledstrip_controller.hpp
 OBJ = pir.o ledstrip.o ledstrip_controller.o main.o

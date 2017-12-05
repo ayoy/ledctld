@@ -2,35 +2,42 @@
 #define PIR_HPP
 
 #include <thread>
+#include <mutex>
+#include <atomic>
 
 class PIR;
 
 class PIRDelegate 
 {
 public:
-    virtual void pirDidRecognizeMotion(const PIR &pir) = 0;
+    virtual void pirDidStart(PIR &pir) = 0;
+    virtual void pirDidStop(PIR &pir) = 0;
+    virtual void pirDidRecognizeMotion(PIR &pir) = 0;
 };
 
 class PIR 
 {
-
     int pigpio;
     unsigned gpio;
-    bool enabled {false};
-    int state {false};
+    bool state {false};
+
+    std::mutex enabledMutex;
+
+    std::thread *worker {nullptr};
+    std::atomic<bool>stopWorker {false};
+
+    std::atomic<bool>enabled {false};
 
     void start();
     void stop();
     void updateState();
-
-    std::thread *worker {nullptr};
 
 public:
 
     PIR(int pigpio, unsigned gpio);
     ~PIR();
 
-    bool isEnabled() const;
+    bool isEnabled();
     void setEnabled(bool enabled);
 
     PIRDelegate *delegate {nullptr};

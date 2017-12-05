@@ -48,6 +48,8 @@ class LedStrip
 
     double brightness {0};
 
+    void updatePins() const;
+
 public:
     LedStrip(int pigpio, unsigned gpioR, unsigned gpioG, unsigned gpioB): 
         pigpio(pigpio), gpioR(gpioR), gpioG(gpioG), gpioB(gpioB) 

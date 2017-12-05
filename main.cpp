@@ -35,14 +35,11 @@ int main(int argc, char * argv[]) {
     cout << "red: " << leds.color().red << endl;
 
     PIR pir(pigpio, GPIOPIR);
-    pir.setEnabled(true);
 
     LedStripController controller;
     controller.setup(&leds, &pir);
 
-    while(1) {
-
-    }
+    controller.run();
 
     pigpio_stop(pigpio);
     return 0;
